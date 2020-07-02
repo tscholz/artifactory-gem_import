@@ -1,3 +1,5 @@
+require "digest"
+
 module Artifactory
   module GemImport
     module Gems
@@ -14,13 +16,23 @@ module Artifactory
 
         def upload(url, headers, file)
           headers = headers.merge "Content-Length" => file.size.to_s,
-                                  "Transfer-Encoding" => "chunked"
+                                  "Transfer-Encoding" => "chunked",
+                                  "X-Checksum-Sha1" => sha1(file),
+                                  "X-Checksum-Md5" => md5(file)
 
           response = HTTParty.put url,
                                   headers: headers,
                                   body_stream: file
 
           response.success? ? JSON.parse(response.body) : response.error!
+        end
+
+        def sha1(file)
+          Digest::SHA1.hexdigest(file.read).tap { file.rewind }
+        end
+
+        def md5(file)
+          Digest::MD5.hexdigest(file.read).tap { file.rewind }
         end
       end
     end
