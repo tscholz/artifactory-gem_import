@@ -10,6 +10,12 @@ If you want to migrate you local gem repository over time and if you want to kee
 your old GemServer kind of "mirrored" to the Artifactory, this tool might be useful
 to you e.g. as part of the CI/CD pipeline when releasing gems.
 
+## How it works
+- it diffs the specs.4.8.gz of both repositories
+- it down- and uploads the missing gems only
+- it verifies the MD5 hash of the uploaded gem file with the cached one
+- it deletes the uploaded gem if the checksums do not match
+
 ## Installation
 
 ```ruby
