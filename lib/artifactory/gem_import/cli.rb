@@ -20,9 +20,9 @@ module Artifactory
       desc "import", "Copy gems from the source repo into the target repo."
 
       def import
-        GemImport.import! source_repo: source_repo,
-                               target_repo: target_repo,
-                               only: options[:only]
+        say GemImport.import! source_repo: source_repo,
+                              target_repo: target_repo,
+                              only: options[:only]
       end
 
       option :target_repo, required: true, type: :string
@@ -34,8 +34,8 @@ module Artifactory
       desc "delete", "Delete gems from the target repo."
 
       def delete
-        GemImport.delete! repo: target_repo,
-                          only: options[:only]
+        say GemImport.delete! repo: target_repo,
+                              only: options[:only]
       end
 
       option :source_repo, required: true, type: :string
