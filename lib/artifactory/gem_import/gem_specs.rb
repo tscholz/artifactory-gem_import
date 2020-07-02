@@ -18,7 +18,7 @@ module Artifactory
         specs = Specs
           .new(url: repo.specs_url, headers: repo.headers)
           .specs
-      rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout => err
+      rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err
         raise ClientError, "Could not fetch specs. URL: #{repo.specs_url}, Reason: #{err.message}"
       else
         Specs.filter(specs, only: only).sort

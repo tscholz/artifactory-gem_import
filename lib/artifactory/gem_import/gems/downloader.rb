@@ -6,7 +6,7 @@ module Artifactory
       class Downloader
         def call(url, filename)
           download url, filename
-        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout => err # TODO handle file (-system) errors
+        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err # TODO handle file (-system) errors
           [:error, err.message]
         else
           [:ok, url]

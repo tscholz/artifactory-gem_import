@@ -4,7 +4,7 @@ module Artifactory
       class Cleaner
         def call(url, headers)
           [:ok, cleanup(url, headers)]
-        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout => err
+        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err
           [:error, err.message]
         end
 

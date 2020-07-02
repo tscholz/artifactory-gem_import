@@ -6,7 +6,7 @@ module Artifactory
           file = File.open file_path, "r"
 
           [:ok, upload(url, headers, file)]
-        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout => err # TODO handle File errors, JSON parse errors
+        rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err # TODO handle File errors, JSON parse errors
           [:error, err.message]
         end
 
