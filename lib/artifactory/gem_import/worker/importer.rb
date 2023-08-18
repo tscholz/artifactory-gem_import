@@ -5,12 +5,13 @@ module Artifactory
   module GemImport
     module Worker
       class Importer < Base
-        attr_reader :source_repo, :target_repo, :only
+        attr_reader :source_repo, :target_repo, :only, :force
 
-        def initialize(source_repo:, target_repo:, only: /.+/)
+        def initialize(source_repo:, target_repo:, only: /.+/, force: false)
           @source_repo = source_repo
           @target_repo = target_repo
-          @only = only
+          @only        = only
+          @force       = force
         end
 
         def import!
@@ -42,9 +43,13 @@ module Artifactory
         end
 
         def missing_gems
-          @missing_gems ||= GemSpecs.missing_gems source_repo: source_repo,
-                                                  target_repo: target_repo,
-                                                  only: only
+          @missing_gems ||= if force
+                              GemSpecs.get repo: source_repo, only: only
+                            else
+                              GemSpecs.missing_gems source_repo: source_repo,
+                                                    target_repo: target_repo,
+                                                    only:        only
+                            end
         end
 
         def download(gem)

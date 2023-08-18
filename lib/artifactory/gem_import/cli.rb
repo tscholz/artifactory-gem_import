@@ -17,12 +17,15 @@ module Artifactory
 
       option :only, type: :string, default: ".+"
 
+      option :force, type: :boolean, default: false
+
       desc "import", "Copy gems from the source repo into the target repo."
 
       def import
         say GemImport.import! source_repo: source_repo,
                               target_repo: target_repo,
-                              only: options[:only]
+                              only: options[:only],
+                              force: options[:force]
       end
 
       option :target_repo, required: true, type: :string
@@ -57,6 +60,15 @@ module Artifactory
 
         say gems.count
       end
+
+      # option :target_repo, required: true, type: :string
+      #
+      # option :target_repo_api_key, required: true, type: :string
+      #
+      # desc "reindex", "Trigger reindexing of the target repo (Artifactory only)."
+      # def reindex
+      #   GemImport.reindex! repo: target_repo
+      # end
 
       desc "version", "Show version information"
 

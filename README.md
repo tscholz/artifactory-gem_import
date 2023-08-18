@@ -12,7 +12,7 @@ to you e.g. as part of the CI/CD pipeline when releasing gems.
 
 ## How it works
 - it diffs the specs.4.8.gz of both repositories
-- it down- and uploads the missing gems only
+- it down- and uploads the missing gems
 - it verifies the MD5 hash of the uploaded gem file with the cached one
 - it deletes the uploaded gem if the checksums do not match
 
@@ -31,8 +31,9 @@ $ artifactory-gem-import show-missing --source-repo https://your-repo.local/priv
 
 Import gems into the Artifactory.
 ```shell
-$ artifactory-gem-import import --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-api-key <api-key>  [--only "+."]
+$ artifactory-gem-import import --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-api-key <api-key>  [--only "+."] [--force]
 ```
+Using `--force` uploads gems even if already present in the target repo instead of skipping them.
 
 Delete gems from the Artifactory. It will NOT remove the `rubygems-update` gem as it seems to be needed to keep the gem repository working. 
 ```shell

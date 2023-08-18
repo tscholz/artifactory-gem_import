@@ -13,9 +13,9 @@ module Artifactory
 
     module_function
 
-    def import!(source_repo:, target_repo:, only: /.+/)
+    def import!(source_repo:, target_repo:, only: /.+/, force: false)
       Worker::Importer
-        .new(source_repo: source_repo, target_repo: target_repo, only: only)
+        .new(source_repo: source_repo, target_repo: target_repo, only: only, force: force)
         .import!
     end
 
