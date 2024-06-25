@@ -1,4 +1,5 @@
 require "digest"
+require "json"
 
 module Artifactory
   module GemImport
