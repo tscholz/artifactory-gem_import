@@ -9,7 +9,7 @@ module Artifactory
 
     let(:source_repo) { GemImport.source_repo(url: "http://source-repo.local") }
 
-    let(:target_repo) { GemImport.target_repo(url: "http://target-repo.local", api_key: "XYZ") }
+    let(:target_repo) { GemImport.target_repo(url: "http://target-repo.local", access_token: "XYZ") }
 
     describe "#filename" do
       it { expect(gem.filename).to eq "my-gem-0.1.0.gem" }

@@ -8,7 +8,7 @@ require_relative "gem_import/worker"
 
 module Artifactory
   module GemImport
-    Error = Class.new StandardError
+    Error       = Class.new StandardError
     ClientError = Class.new Error
 
     module_function
@@ -32,13 +32,13 @@ module Artifactory
     end
 
     def source_repo(url:)
-      Repo.new url: url,
+      Repo.new url:     url,
                headers: {}
     end
 
-    def target_repo(url:, api_key:)
-      Repo.new url: url,
-               headers: { "X-JFrog-Art-Api" => api_key }
+    def target_repo(url:, access_token:)
+      Repo.new url:     url,
+               headers: { "Authorization" => "Bearer #{access_token}" }
     end
   end
 end

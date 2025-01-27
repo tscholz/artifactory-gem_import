@@ -13,7 +13,7 @@ module Artifactory
 
       option :target_repo, required: true, type: :string
 
-      option :target_repo_api_key, required: true, type: :string
+      option :target_repo_access_token, required: true, type: :string
 
       option :only, type: :string, default: ".+"
 
@@ -30,7 +30,7 @@ module Artifactory
 
       option :target_repo, required: true, type: :string
 
-      option :target_repo_api_key, required: true, type: :string
+      option :target_repo_access_token, required: true, type: :string
 
       option :only, type: :string, default: ".+"
 
@@ -45,7 +45,7 @@ module Artifactory
 
       option :target_repo, required: true, type: :string
 
-      option :target_repo_api_key, required: true, type: :string
+      option :target_repo_access_token, required: true, type: :string
 
       option :only, type: :string, default: ".+"
 
@@ -63,7 +63,7 @@ module Artifactory
 
       # option :target_repo, required: true, type: :string
       #
-      # option :target_repo_api_key, required: true, type: :string
+      # option :target_repo_access_token, required: true, type: :string
       #
       # desc "reindex", "Trigger reindexing of the target repo (Artifactory only)."
       # def reindex
@@ -84,7 +84,7 @@ module Artifactory
 
       def target_repo
         GemImport.target_repo url: options[:target_repo],
-                              api_key: options[:target_repo_api_key]
+                              access_token: options[:target_repo_access_token]
       end
     end
   end

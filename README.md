@@ -26,18 +26,18 @@ gem 'artifactory-gem_import'
 
 Show gems not already present in the Artifactory.
 ```shell
-$ artifactory-gem-import show-missing --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-api-key <api-key> [--only "+."]
+$ artifactory-gem-import show-missing --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-access-token <access-token> [--only "+."]
 ```
 
 Import gems into the Artifactory.
 ```shell
-$ artifactory-gem-import import --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-api-key <api-key>  [--only "+."] [--force]
+$ artifactory-gem-import import --source-repo https://your-repo.local/private --target-repo https://your-artifactory.local/gems-local --target-repo-access-token <access-token>  [--only "+."] [--force]
 ```
 Using `--force` uploads gems even if already present in the target repo instead of skipping them.
 
 Delete gems from the Artifactory. It will NOT remove the `rubygems-update` gem as it seems to be needed to keep the gem repository working. 
 ```shell
-$ artifactory-gem-import delete --target-repo https://your-artifactory.local/gems-local --target-repo-api-key <api-key>  [--only "+."]
+$ artifactory-gem-import delete --target-repo https://your-artifactory.local/gems-local --target-repo-access-token <access-token>  [--only "+."]
 ```
 
 Keep in mind that Artifactory needs some time to apply your changes.
