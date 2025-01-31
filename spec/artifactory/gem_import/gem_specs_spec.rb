@@ -3,10 +3,12 @@ RSpec.describe Artifactory::GemImport::GemSpecs do
     Artifactory::GemImport::Repo.new(url: "https://gem-repo.local", headers: {})
   }
 
-  let(:fixture_file) { "spec/fixtures/specs.4.8.gz" }
+  let(:prerelease_specs) { "spec/fixtures/prerelease_specs.4.8.gz" }
+  let(:specs) { "spec/fixtures/specs.4.8.gz" }
 
   let(:gem_examples) do
     [
+      ["example", Gem::Version.new("0.0.1.pre"), "ruby"],
       ["example", Gem::Version.new("0.0.1"), "ruby"],
       ["example", Gem::Version.new("0.0.2"), "ruby"],
       ["example", Gem::Version.new("0.0.2"), "java"],
@@ -15,8 +17,15 @@ RSpec.describe Artifactory::GemImport::GemSpecs do
   end
 
   describe "::get" do
+    before do
+      # Make this one always working.
+      stub_request(:get, "https://gem-repo.local/prerelease_specs.4.8.gz")
+        .to_return(status: 200, body: File.open(prerelease_specs))
+    end
+
     it "returns specs" do
-      stub_request(:get, "https://gem-repo.local/specs.4.8.gz").to_return(status: 200, body: File.open(fixture_file))
+      stub_request(:get, "https://gem-repo.local/specs.4.8.gz")
+        .to_return(status: 200, body: File.open(specs))
 
       expect(described_class.get(repo: repo)).to contain_exactly *gem_examples
     end
@@ -50,8 +59,10 @@ RSpec.describe Artifactory::GemImport::GemSpecs do
       expect(described_class).to receive(:get).twice.and_return gem_examples, other_specs
 
       expect(
-        described_class.missing_gems source_repo: double(), target_repo: double()
-      ).to contain_exactly ["example", Gem::Version.new("0.0.2"), "ruby"], ["example", Gem::Version.new("0.0.2"), "java"]
+        described_class.missing_gems source_repo: double, target_repo: double
+      ).to contain_exactly ["example", Gem::Version.new("0.0.1.pre"), "ruby"],
+                           ["example", Gem::Version.new("0.0.2"), "ruby"],
+                           ["example", Gem::Version.new("0.0.2"), "java"]
     end
   end
 end
