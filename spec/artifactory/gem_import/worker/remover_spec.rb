@@ -3,19 +3,19 @@ RSpec.describe Artifactory::GemImport::Worker::Remover do
     Artifactory::GemImport::Repo.new url: "https://artifactory.local/gems-local", headers: {}
   }
 
-  let(:fixture_spec) {
-    File.open "spec/fixtures/specs.4.8.gz"
-  }
+  let(:prerelease_specs) { File.open "spec/fixtures/prerelease_specs.4.8.gz" }
+  let(:specs) { File.open "spec/fixtures/specs.4.8.gz" }
 
   describe "#remove" do
     it "always skips gems the Artifactory repo requires to work properly" do
       remover = described_class.new(target_repo: target_repo)
 
-      expect(remover).to receive(:gems).and_return [
-                                                     instance_double(Artifactory::GemImport::Gem, name: "rubygems-update",
-                                                                                                  version: "2.0.6",
-                                                                                                  filename: "rubygems-update-2.0.2.gem"),
-                                                   ]
+      expect(remover).to receive(:gems)
+                           .and_return [
+                                         instance_double(Artifactory::GemImport::Gem, name: "rubygems-update",
+                                                         version:                           "2.0.6",
+                                                         filename:                          "rubygems-update-2.0.2.gem"),
+                                       ]
       expect(remover).not_to receive(:remove)
 
       expect(remover.remove!).to eq({ skipped: 1 })
@@ -23,8 +23,10 @@ RSpec.describe Artifactory::GemImport::Worker::Remover do
 
     context "Server responds as expected" do
       before do
+        stub_request(:get, "https://artifactory.local/gems-local/prerelease_specs.4.8.gz")
+          .to_return(status: 200, body: prerelease_specs)
         stub_request(:get, "https://artifactory.local/gems-local/specs.4.8.gz")
-          .to_return(status: 200, body: fixture_spec)
+          .to_return(status: 200, body: specs)
 
         stub_request(:delete, /artifactory.local/).to_return status: [204, nil]
       end
@@ -32,19 +34,19 @@ RSpec.describe Artifactory::GemImport::Worker::Remover do
       it "removes all gems from the target artifactory" do
         remover = described_class.new(target_repo: target_repo)
 
-        expect(remover.remove!).to eq({ removed: 4 })
+        expect(remover.remove!).to eq({ removed: 5 })
       end
 
       it "removes gems matching the :only expression from the target repo" do
         remover = described_class.new(target_repo: target_repo, only: "^example")
 
-        expect(remover.remove!).to eq({ removed: 3 })
+        expect(remover.remove!).to eq({ removed: 4 })
       end
     end
 
     context "Specs can not be retrieved" do
       before do
-        stub_request(:get, "https://artifactory.local/gems-local/specs.4.8.gz")
+        stub_request(:get, "https://artifactory.local/gems-local/prerelease_specs.4.8.gz")
           .to_timeout
       end
 
@@ -59,8 +61,10 @@ RSpec.describe Artifactory::GemImport::Worker::Remover do
       let(:remover) { described_class.new(target_repo: target_repo) }
 
       before do
+        stub_request(:get, "https://artifactory.local/gems-local/prerelease_specs.4.8.gz")
+          .to_return(status: 200, body: prerelease_specs)
         stub_request(:get, "https://artifactory.local/gems-local/specs.4.8.gz")
-          .to_return(status: 200, body: fixture_spec)
+          .to_return(status: 200, body: specs)
 
         stub_request(:delete, /\/example/).to_return status: [204, nil]
 
@@ -68,7 +72,7 @@ RSpec.describe Artifactory::GemImport::Worker::Remover do
       end
 
       it "handles server errors" do
-        expect(remover.remove!).to eq({ removal_failed: 1, removed: 3, review: ["other-example-0.1.0.gem"] })
+        expect(remover.remove!).to eq({ removal_failed: 1, removed: 4, review: ["other-example-0.1.0.gem"] })
       end
     end
   end

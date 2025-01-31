@@ -15,13 +15,19 @@ module Artifactory
       end
 
       def get(repo:, only: /.+/)
-        specs = Specs
-          .new(url: repo.specs_url, headers: repo.headers)
-          .specs
-      rescue Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err
-        raise ClientError, "Could not fetch specs. URL: #{repo.specs_url}, Reason: #{err.message}"
-      else
-        Specs.filter(specs, only: only).sort
+        %i[prerelease_specs_url specs_url]
+          .flat_map { |getter| fetch repo.public_send(getter), repo.headers }
+          .sort
+          .then { |specs| Specs.filter specs, only: only }
+      end
+
+      private_class_method
+
+      def fetch(url, headers)
+        Specs.new(url: url, headers: headers)
+             .specs
+      rescue Zlib::GzipFile::Error, Net::HTTPClientException, Net::HTTPFatalError, Net::OpenTimeout, SocketError => err
+        raise ClientError, "Could not fetch specs. URL: #{url}, Reason: #{err.message}"
       end
     end
   end
